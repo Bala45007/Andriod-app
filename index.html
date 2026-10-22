@@ -1,0 +1,434 @@
+<title>Tamil Nadu Land & Money Toolkit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Tamil:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: survey-sheet feel. Header, ruled tab strip, then a two-column work area (inputs | results) that stacks on phones. */
+:root{
+  --bg:#F2F4EC; --surface:#FFFFFF; --ink:#15251B; --muted:#58695E; --line:#D5DBCD;
+  --accent:#1E5C39; --on-accent:#FFFFFF; --mark:#E3A21A; --soft:#E7EEDF; --warn:#9A5B00;
+  --f-display:'Familjen Grotesk','Noto Sans Tamil',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans','Noto Sans Tamil',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1A14; --surface:#16241B; --ink:#E8EFE4; --muted:#9BAD9F; --line:#273C2F;
+  --accent:#6FCF97; --on-accent:#0B1A11; --mark:#F0B93B; --soft:#1C3024; --warn:#F0B93B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1A14; --surface:#16241B; --ink:#E8EFE4; --muted:#9BAD9F; --line:#273C2F;
+  --accent:#6FCF97; --on-accent:#0B1A11; --mark:#F0B93B; --soft:#1C3024; --warn:#F0B93B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);margin:0;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 24px;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+h1{font:700 clamp(26px,5vw,40px)/1.05 var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.ta{font:500 15px var(--f-display);color:var(--muted);margin:6px 0 0}
+.stamp{font:500 12px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:right}
+.stamp b{color:var(--accent)}
+nav{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--line);margin-top:0;scrollbar-width:thin}
+nav a{flex:0 0 auto;padding:12px 16px 10px;text-decoration:none;color:var(--muted);border-bottom:3px solid transparent;font:500 14px var(--f-display);white-space:nowrap}
+nav a small{display:block;font:500 11px var(--f-body);opacity:.85}
+nav a:hover{color:var(--ink)}
+nav a[aria-current="true"]{color:var(--ink);border-bottom-color:var(--mark)}
+nav a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,.link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section[hidden]{display:none}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;margin-top:24px}
+@media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{min-width:0}
+h2{font:700 20px/1.2 var(--f-display);margin:0 0 4px}
+.lede{color:var(--muted);margin:0 0 16px;max-width:60ch}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{font:500 12px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+input,select{font:400 16px var(--f-mono);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:9px 10px;width:100%;min-width:0}
+input:focus,select:focus{border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font:400 14px var(--f-body);text-transform:none;letter-spacing:0;color:var(--ink);margin-bottom:12px}
+.check input{width:auto}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:500 clamp(28px,6vw,40px)/1.1 var(--f-mono);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin:2px 0 0}
+.cap{font:500 12px var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.sub{color:var(--muted);font-size:13px;margin:2px 0 0}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+.kv:last-child{border-bottom:0}
+.kv span:last-child{font-family:var(--f-mono);text-align:right}
+.kv.tot{border-top:2px solid var(--ink);border-bottom:0;font-weight:500;margin-top:4px;padding-top:12px}
+.bar{display:flex;height:14px;border-radius:2px;overflow:hidden;background:var(--soft);margin:14px 0 6px}
+.bar i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--muted)}
+.legend b{display:inline-block;width:10px;height:10px;margin-right:6px;border-radius:1px}
+.tablebox{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font:500 11px var(--f-body);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+td{font-family:var(--f-mono)}
+tr.hit td{background:var(--soft)}
+tr.hit td:first-child{box-shadow:inset 3px 0 0 var(--mark)}
+.note{font-size:13px;color:var(--muted);margin:14px 0 0;max-width:62ch}
+.note.warn{color:var(--warn)}
+.best{display:inline-block;font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;background:var(--mark);color:#1b1500;border-radius:2px;padding:1px 6px;margin-left:8px;vertical-align:middle}
+.tag{font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;margin-top:24px}
+.link{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.link:hover{border-color:var(--accent)}
+.link strong{display:block;font:700 17px var(--f-display);margin:2px 0 4px}
+.link span.host{font:400 12px var(--f-mono);color:var(--accent)}
+.link p{margin:6px 0 0;font-size:14px;color:var(--muted)}
+details{margin-top:14px}
+summary{cursor:pointer;font:500 13px var(--f-body);color:var(--accent)}
+footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);max-width:75ch}
+@media(prefers-reduced-motion:no-preference){.big{transition:opacity .15s}}
+</style>
+
+<div class="wrap">
+<header>
+  <div>
+    <h1>Tamil Nadu Land &amp; Money Toolkit</h1>
+    <p class="ta">தமிழ்நாடு நிலம் &amp; பணக் கருவிகள்</p>
+  </div>
+  <div class="stamp">Runs in your browser<br><b>No sign-up · No server · Free</b></div>
+</header>
+
+<nav id="tabs" aria-label="Tools">
+  <a href="#land">Land units<small>நில அளவு</small></a>
+  <a href="#deed">Registration cost<small>பதிவுக் கட்டணம்</small></a>
+  <a href="#emi">Loan EMI<small>கடன் தவணை</small></a>
+  <a href="#save">SIP &amp; FD<small>சேமிப்பு</small></a>
+  <a href="#gains">Sale tax<small>மூலதன ஆதாயம்</small></a>
+  <a href="#links">Official portals<small>அரசு இணையதளங்கள்</small></a>
+</nav>
+
+<!-- LAND UNITS -->
+<section id="land" hidden>
+ <div class="grid">
+  <div class="col">
+    <h2>Land unit converter</h2>
+    <p class="lede">Convert between the units used in Tamil Nadu sale deeds, patta and layout brochures.</p>
+    <div class="row">
+      <div class="field"><label for="land-v">Area</label><input id="land-v" type="number" inputmode="decimal" min="0" step="any" value="2.5"></div>
+      <div class="field"><label for="land-u">Unit</label><select id="land-u"></select></div>
+    </div>
+    <div class="field"><label for="land-p">Price per cent (₹, optional)</label><input id="land-p" type="number" inputmode="decimal" min="0" step="any" value="350000"></div>
+    <p class="note">Example values. Replace them with your plot.</p>
+  </div>
+  <div class="col">
+    <div class="panel">
+      <div class="cap">Total plot price</div>
+      <div class="big" id="land-price">–</div>
+      <p class="sub" id="land-price-w"></p>
+      <div class="tablebox"><table id="land-t"></table></div>
+      <p class="note">1 acre = 100 cents = 43,560 sq ft. 1 ground = 2,400 sq ft. A veli is an older Tamil Nadu measure and is approximate (about 6.17 acres), so check the figure in your own deed.</p>
+    </div>
+  </div>
+ </div>
+</section>
+
+<!-- REGISTRATION -->
+<section id="deed" hidden>
+ <div class="grid">
+  <div class="col">
+    <h2>Stamp duty &amp; registration fee</h2>
+    <p class="lede">Duty is charged on the higher of the sale price and the guideline value.</p>
+    <div class="field"><label for="d-type">Document</label>
+      <select id="d-type">
+        <option value="sale">Sale deed</option>
+        <option value="gift">Gift deed to family</option>
+        <option value="settle">Family settlement</option>
+        <option value="gift-other">Gift deed to non-family</option>
+      </select></div>
+    <div class="row">
+      <div class="field"><label for="d-sale">Sale price (₹)</label><input id="d-sale" type="number" inputmode="decimal" min="0" step="any" value="3500000"></div>
+      <div class="field"><label for="d-guide">Guideline value (₹)</label><input id="d-guide" type="number" inputmode="decimal" min="0" step="any" value="4200000"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="d-stamp">Stamp duty %</label><input id="d-stamp" type="number" inputmode="decimal" min="0" step="any" value="7"></div>
+      <div class="field"><label for="d-reg">Registration fee %</label><input id="d-reg" type="number" inputmode="decimal" min="0" step="any" value="4"></div>
+    </div>
+    <label class="check" for="d-woman"><input id="d-woman" type="checkbox"> Registered in a woman's name</label>
+    <div class="field"><label for="d-misc">Other charges: document writer, copies (₹)</label><input id="d-misc" type="number" inputmode="decimal" min="0" step="any" value="5000"></div>
+    <p class="note warn">Rates change by government order. Check the current rate on TNREGINET before you pay. Find the guideline value for your survey number there too.</p>
+  </div>
+  <div class="col">
+    <div class="panel" id="d-out"></div>
+  </div>
+ </div>
+</section>
+
+<!-- EMI -->
+<section id="emi" hidden>
+ <div class="grid">
+  <div class="col">
+    <h2>Home or plot loan EMI</h2>
+    <p class="lede">See the monthly instalment and how much of what you pay is interest.</p>
+    <div class="field"><label for="e-p">Loan amount (₹)</label><input id="e-p" type="number" inputmode="decimal" min="0" step="any" value="2500000"></div>
+    <div class="row">
+      <div class="field"><label for="e-r">Interest % per year</label><input id="e-r" type="number" inputmode="decimal" min="0" step="any" value="8.75"></div>
+      <div class="field"><label for="e-y">Years</label><input id="e-y" type="number" inputmode="decimal" min="1" max="40" step="1" value="20"></div>
+    </div>
+    <div class="field"><label for="e-x">Part payment each year (₹, optional)</label><input id="e-x" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+    <p class="note">Example values. Part payment is paid at the end of each year and reduces the balance.</p>
+  </div>
+  <div class="col">
+    <div class="panel" id="e-out"></div>
+  </div>
+ </div>
+</section>
+
+<!-- SIP & FD -->
+<section id="save" hidden>
+ <div class="grid">
+  <div class="col">
+    <h2>SIP and fixed deposit</h2>
+    <p class="lede">Estimate what a monthly SIP or a one-time deposit grows to. Returns are assumptions, not promises.</p>
+    <div class="cap" style="margin:4px 0 8px">Monthly SIP</div>
+    <div class="row">
+      <div class="field"><label for="s-m">Per month (₹)</label><input id="s-m" type="number" inputmode="decimal" min="0" step="any" value="10000"></div>
+      <div class="field"><label for="s-r">Return % per year</label><input id="s-r" type="number" inputmode="decimal" min="0" step="any" value="12"></div>
+    </div>
+    <div class="field"><label for="s-y">Years</label><input id="s-y" type="number" inputmode="decimal" min="1" step="1" value="10"></div>
+    <div class="cap" style="margin:16px 0 8px">One-time deposit (FD)</div>
+    <div class="row">
+      <div class="field"><label for="f-p">Deposit (₹)</label><input id="f-p" type="number" inputmode="decimal" min="0" step="any" value="500000"></div>
+      <div class="field"><label for="f-r">Interest % per year</label><input id="f-r" type="number" inputmode="decimal" min="0" step="any" value="7"></div>
+    </div>
+    <div class="field"><label for="f-y">Years</label><input id="f-y" type="number" inputmode="decimal" min="1" step="any" value="5"></div>
+  </div>
+  <div class="col">
+    <div class="panel" id="s-out"></div>
+  </div>
+ </div>
+</section>
+
+<!-- CAPITAL GAINS -->
+<section id="gains" hidden>
+ <div class="grid">
+  <div class="col">
+    <h2>Tax on selling land or a house</h2>
+    <p class="lede">A rough long-term capital gains estimate for a resident individual.</p>
+    <div class="row">
+      <div class="field"><label for="g-s">Sale price (₹)</label><input id="g-s" type="number" inputmode="decimal" min="0" step="any" value="8000000"></div>
+      <div class="field"><label for="g-b">Purchase price (₹)</label><input id="g-b" type="number" inputmode="decimal" min="0" step="any" value="3000000"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="g-i">Improvement cost (₹)</label><input id="g-i" type="number" inputmode="decimal" min="0" step="any" value="200000"></div>
+      <div class="field"><label for="g-e">Selling expenses (₹)</label><input id="g-e" type="number" inputmode="decimal" min="0" step="any" value="100000"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="g-m">Months you held it</label><input id="g-m" type="number" inputmode="decimal" min="0" step="1" value="84"></div>
+      <div class="field"><label for="g-x">Indexed cost (₹, optional)</label><input id="g-x" type="number" inputmode="decimal" min="0" step="any" value="0"></div>
+    </div>
+    <p class="note">Indexed cost applies only to property bought before 23 July 2024. Work it out from the Cost Inflation Index table on the income tax website and enter it here to compare both options.</p>
+  </div>
+  <div class="col">
+    <div class="panel" id="g-out"></div>
+  </div>
+ </div>
+</section>
+
+<!-- LINKS -->
+<section id="links" hidden>
+  <h2 style="margin-top:24px">Official portals</h2>
+  <p class="lede">Use these for the real records. This toolkit only does the arithmetic.</p>
+  <div class="links">
+    <a class="link" href="https://tnreginet.gov.in" target="_blank" rel="noopener"><span class="tag">Registration department</span><strong>TNREGINET</strong><span class="host">tnreginet.gov.in</span><p>Encumbrance certificate, guideline value, document registration and fee details.</p></a>
+    <a class="link" href="https://eservices.tn.gov.in" target="_blank" rel="noopener"><span class="tag">Revenue department</span><strong>Patta &amp; Chitta</strong><span class="host">eservices.tn.gov.in</span><p>View patta, chitta and A-register extracts, and track mutation applications.</p></a>
+    <a class="link" href="https://tngis.tn.gov.in" target="_blank" rel="noopener"><span class="tag">Survey &amp; maps</span><strong>TNGIS</strong><span class="host">tngis.tn.gov.in</span><p>Village maps and survey field boundaries for a survey number.</p></a>
+  </div>
+  <details>
+    <summary>Before you buy land, check these</summary>
+    <p class="note">Encumbrance certificate for the last 30 years or more. Patta and chitta in the seller's name. Survey number matches the sale deed. Guideline value for that street or survey number. Approval status of the layout (DTCP or CMDA) for house plots.</p>
+  </details>
+</section>
+
+<footer>These are estimates for planning. Tax and duty rules change, and your case may have exemptions or surcharges not covered here. Confirm with the Sub-Registrar office or a chartered accountant before you act. The toolkit does not store or send anything you type.</footer>
+</div>
+
+<script>
+/*LOGIC-START*/
+var UNITS=[
+  {k:'sqft',n:'Square feet',f:1},
+  {k:'sqyd',n:'Square yards',f:9},
+  {k:'sqm',n:'Square metres',f:10.7639104},
+  {k:'cent',n:'Cents',f:435.6},
+  {k:'ground',n:'Grounds',f:2400},
+  {k:'acre',n:'Acres',f:43560},
+  {k:'ha',n:'Hectares',f:107639.104},
+  {k:'veli',n:'Veli (approx.)',f:43560*6.17}
+];
+function landConvert(v,unit){
+  var u=UNITS.filter(function(x){return x.k===unit})[0];
+  var sqft=v*u.f;
+  return UNITS.map(function(x){return {k:x.k,n:x.n,val:sqft/x.f}});
+}
+function deedCalc(o){
+  var value=Math.max(o.sale||0,o.guide||0);
+  var sp=o.stamp,rp=o.reg;
+  if(o.woman&&o.type==='sale'&&value<=1000000)rp=Math.max(0,rp-1);
+  var stamp=value*sp/100,reg=value*rp/100;
+  if(o.type==='settle'){stamp=Math.min(stamp,25000);reg=Math.min(reg,4000);}
+  var misc=o.misc||0;
+  return {value:value,sp:sp,rp:rp,stamp:stamp,reg:reg,misc:misc,total:stamp+reg+misc,usedGuide:(o.guide||0)>(o.sale||0)};
+}
+function emiCalc(P,annual,years,extra){
+  var n=Math.round(years*12),r=annual/1200,emi;
+  if(r===0)emi=P/n;else emi=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  var bal=P,rows=[],paidInt=0,paidTot=0,yi=0,yp=0,months=0;
+  for(var m=1;m<=n&&bal>0.005;m++){
+    var i=bal*r,pr=Math.min(emi-i,bal);
+    bal-=pr;yi+=i;yp+=pr;paidInt+=i;paidTot+=pr+i;months=m;
+    if(m%12===0||bal<=0.005){
+      if(extra>0&&bal>0.005){var ex=Math.min(extra,bal);bal-=ex;yp+=ex;paidTot+=ex;}
+      rows.push({y:Math.ceil(m/12),p:yp,i:yi,b:Math.max(bal,0)});yi=0;yp=0;
+    }
+  }
+  return {emi:emi,interest:paidInt,total:paidTot,rows:rows,months:months};
+}
+function sipCalc(P,annual,years){
+  var n=Math.round(years*12),r=annual/1200,fv;
+  if(r===0)fv=P*n;else fv=P*((Math.pow(1+r,n)-1)/r)*(1+r);
+  return {fv:fv,invested:P*n,gain:fv-P*n};
+}
+function fdCalc(P,annual,years){
+  var a=P*Math.pow(1+annual/400,4*years);
+  return {fv:a,gain:a-P};
+}
+function gainsCalc(o){
+  var longTerm=o.months>24;
+  var gain=o.sale-o.expenses-o.buy-o.improve;
+  var res={longTerm:longTerm,gain:gain};
+  if(!longTerm)return res;
+  res.taxA=Math.max(0,gain)*0.125*1.04;
+  if(o.indexed>0){
+    res.gainB=o.sale-o.expenses-o.indexed;
+    res.taxB=Math.max(0,res.gainB)*0.20*1.04;
+  }
+  return res;
+}
+/*LOGIC-END*/
+
+var nf=new Intl.NumberFormat('en-IN',{maximumFractionDigits:0});
+function inr(n){return '₹ '+nf.format(Math.round(n));}
+function words(n){
+  var a=Math.abs(n);
+  if(a>=1e7)return (n/1e7).toFixed(2)+' crore';
+  if(a>=1e5)return (n/1e5).toFixed(2)+' lakh';
+  return '';
+}
+function num(id){var v=parseFloat(document.getElementById(id).value);return isFinite(v)&&v>=0?v:0;}
+function el(id){return document.getElementById(id);}
+function kv(a,b,cls){return '<div class="kv '+(cls||'')+'"><span>'+a+'</span><span>'+b+'</span></div>';}
+function fmtArea(v){
+  if(v>=1000)return nf.format(Math.round(v*100)/100);
+  if(v>=1)return (Math.round(v*1000)/1000).toString();
+  return (Math.round(v*100000)/100000).toString();
+}
+
+/* Land */
+function renderLand(){
+  var u=el('land-u'),rows=landConvert(num('land-v'),u.value);
+  var t='<tr><th>Unit</th><th>Area</th></tr>';
+  rows.forEach(function(r){t+='<tr'+(r.k===u.value?' class="hit"':'')+'><td>'+r.n+'</td><td>'+fmtArea(r.val)+'</td></tr>';});
+  el('land-t').innerHTML=t;
+  var cents=rows.filter(function(r){return r.k==='cent'})[0].val;
+  var p=num('land-p'),tot=cents*p;
+  el('land-price').textContent=p>0?inr(tot):'–';
+  el('land-price-w').textContent=p>0?(fmtArea(cents)+' cents'+(words(tot)?' · '+words(tot):'')):'Enter a price per cent to see the total.';
+}
+
+/* Deed */
+var DEED_DEFAULTS={sale:[7,4],gift:[1,1],settle:[1,1],'gift-other':[7,4]};
+function renderDeed(){
+  var type=el('d-type').value;
+  var c=deedCalc({type:type,sale:num('d-sale'),guide:num('d-guide'),stamp:num('d-stamp'),reg:num('d-reg'),woman:el('d-woman').checked,misc:num('d-misc')});
+  var h='<div class="cap">Total to pay</div><div class="big">'+inr(c.total)+'</div><p class="sub">'+(words(c.total)||'&nbsp;')+'</p>';
+  h+='<div style="margin-top:12px">'
+   +kv('Value used'+(c.usedGuide?' (guideline value)':' (sale price)'),inr(c.value))
+   +kv('Stamp duty at '+c.sp+'%',inr(c.stamp))
+   +kv('Registration fee at '+c.rp+'%',inr(c.reg))
+   +kv('Other charges',inr(c.misc))
+   +kv('Total',inr(c.total),'tot')+'</div>';
+  var pct=c.value>0?((c.stamp+c.reg)/c.value*100).toFixed(1):'0';
+  h+='<p class="note">Duty and fee together are '+pct+'% of the value used.'+(type==='settle'?' Stamp duty is capped at ₹25,000 and registration at ₹4,000 for family settlements.':'')+(c.rp!==num('d-reg')?' The 1% women\'s concession on registration was applied because the value is ₹10 lakh or less.':'')+'</p>';
+  el('d-out').innerHTML=h;
+}
+
+/* EMI */
+function renderEmi(){
+  var P=num('e-p'),r=num('e-r'),y=Math.max(1,Math.min(40,num('e-y'))),x=num('e-x');
+  if(P<=0){el('e-out').innerHTML='<p class="note">Enter a loan amount.</p>';return;}
+  var c=emiCalc(P,r,y,x),pp=P/(P+c.interest)*100;
+  var h='<div class="cap">Monthly EMI</div><div class="big">'+inr(c.emi)+'</div><p class="sub">for '+Math.floor(c.months/12)+' years '+(c.months%12?(c.months%12)+' months':'')+'</p>';
+  h+='<div class="bar" role="img" aria-label="Principal '+pp.toFixed(0)+' percent, interest '+(100-pp).toFixed(0)+' percent"><i style="width:'+pp+'%;background:var(--accent)"></i><i style="width:'+(100-pp)+'%;background:var(--mark)"></i></div>';
+  h+='<div class="legend"><span><b style="background:var(--accent)"></b>Principal '+inr(P)+'</span><span><b style="background:var(--mark)"></b>Interest '+inr(c.interest)+'</span></div>';
+  h+='<div style="margin-top:12px">'+kv('Total interest',inr(c.interest))+kv('Total paid',inr(c.total),'tot')+'</div>';
+  h+='<details><summary>Year by year</summary><div class="tablebox"><table><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr>';
+  c.rows.forEach(function(rw){h+='<tr><td>'+rw.y+'</td><td>'+nf.format(Math.round(rw.p))+'</td><td>'+nf.format(Math.round(rw.i))+'</td><td>'+nf.format(Math.round(rw.b))+'</td></tr>';});
+  h+='</table></div></details>';
+  el('e-out').innerHTML=h;
+}
+
+/* SIP & FD */
+function renderSave(){
+  var s=sipCalc(num('s-m'),num('s-r'),num('s-y'));
+  var f=fdCalc(num('f-p'),num('f-r'),num('f-y'));
+  var sp=s.fv>0?s.invested/s.fv*100:100;
+  var h='<div class="cap">SIP value after '+num('s-y')+' years</div><div class="big">'+inr(s.fv)+'</div><p class="sub">'+(words(s.fv)||'&nbsp;')+'</p>';
+  h+='<div class="bar" role="img" aria-label="Invested '+sp.toFixed(0)+' percent, gain '+(100-sp).toFixed(0)+' percent"><i style="width:'+sp+'%;background:var(--accent)"></i><i style="width:'+(100-sp)+'%;background:var(--mark)"></i></div>';
+  h+='<div class="legend"><span><b style="background:var(--accent)"></b>Invested '+inr(s.invested)+'</span><span><b style="background:var(--mark)"></b>Gain '+inr(s.gain)+'</span></div>';
+  h+='<div style="height:20px"></div><div class="cap">FD maturity after '+num('f-y')+' years</div><div class="big">'+inr(f.fv)+'</div><p class="sub">'+(words(f.fv)||'&nbsp;')+'</p>';
+  h+='<div style="margin-top:8px">'+kv('Deposit',inr(num('f-p')))+kv('Interest earned',inr(f.gain),'tot')+'</div>';
+  h+='<p class="note">SIP assumes a fixed return with monthly compounding. FD assumes interest compounded every quarter. Real returns vary, and FD interest is taxable.</p>';
+  el('s-out').innerHTML=h;
+}
+
+/* Gains */
+function renderGains(){
+  var o={sale:num('g-s'),buy:num('g-b'),improve:num('g-i'),expenses:num('g-e'),months:num('g-m'),indexed:num('g-x')};
+  var c=gainsCalc(o),h='';
+  if(!c.longTerm){
+    h+='<div class="cap">Short-term gain</div><div class="big">'+inr(Math.max(0,c.gain))+'</div>';
+    h+='<p class="note">Property held for 24 months or less gives a short-term gain. It is added to your income and taxed at your slab rate, so this toolkit does not compute the tax.</p>';
+  }else{
+    var tax=c.taxA,useB=c.taxB!==undefined&&c.taxB<c.taxA;
+    if(useB)tax=c.taxB;
+    h+='<div class="cap">Estimated tax'+(c.taxB!==undefined?' (lower option)':'')+'</div><div class="big">'+inr(tax)+'</div><p class="sub">Long-term gain, including 4% cess. Surcharge not included.</p>';
+    h+='<div style="margin-top:12px">'
+     +kv('Option 1: 12.5%, no indexation'+(c.taxB!==undefined&&!useB?'<span class="best">lower</span>':''),inr(c.taxA))
+     +kv('&nbsp;&nbsp;Gain',inr(Math.max(0,c.gain)));
+    if(c.taxB!==undefined){
+      h+=kv('Option 2: 20% with indexation'+(useB?'<span class="best">lower</span>':''),inr(c.taxB))+kv('&nbsp;&nbsp;Gain',inr(Math.max(0,c.gainB)));
+    }
+    h+='</div>';
+    if(c.gain<0)h+='<p class="note">Your sale price is below your cost, so there is no taxable gain.</p>';
+    h+='<p class="note">Reinvesting the gain in another house (Section 54) or in specified bonds (Section 54EC) can reduce the tax. Ask a chartered accountant which applies to you.</p>';
+  }
+  el('g-out').innerHTML=h;
+}
+
+/* Wiring */
+(function(){
+  var sel=el('land-u');
+  UNITS.forEach(function(u){var o=document.createElement('option');o.value=u.k;o.textContent=u.n;if(u.k==='acre')o.selected=true;sel.appendChild(o);});
+  var R={land:renderLand,deed:renderDeed,emi:renderEmi,save:renderSave,gains:renderGains};
+  Object.keys(R).forEach(function(k){
+    el(k).addEventListener('input',function(){R[k]();});
+    el(k).addEventListener('change',function(){R[k]();});
+    R[k]();
+  });
+  el('d-type').addEventListener('change',function(){
+    var d=DEED_DEFAULTS[this.value];el('d-stamp').value=d[0];el('d-reg').value=d[1];renderDeed();
+  });
+  var names=['land','deed','emi','save','gains','links'];
+  function show(){
+    var h=(location.hash||'').replace('#','');
+    if(names.indexOf(h)<0)h='land';
+    names.forEach(function(n){el(n).hidden=(n!==h);});
+    Array.prototype.forEach.call(document.querySelectorAll('#tabs a'),function(a){
+      a.setAttribute('aria-current',a.getAttribute('href')==='#'+h?'true':'false');
+    });
+  }
+  window.addEventListener('hashchange',show);
+  show();
+})();
+</script>
